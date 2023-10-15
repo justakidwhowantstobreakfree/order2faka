@@ -1,6 +1,5 @@
 import { Box, Input, Button } from '@chakra-ui/react'
 import { useCallback, useState } from 'react'
-import axios from 'axios'
 
 const Resend = function () {
   const [orderId, setOrderId] = useState('')
@@ -8,13 +7,16 @@ const Resend = function () {
 
   const resend = useCallback(async () => {
     try {
-      await axios.post(`/orders/${orderId}/resend`, {
-        email,
+      await fetch(`/orders/${orderId}/resend`, {
+        method: 'POST',
+        body: JSON.stringify({
+          email,
+        }),
       })
     } catch (err) {
       console.error(err)
     }
-  }, [orderId])
+  }, [orderId, email])
 
   return (
     <Box>

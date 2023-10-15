@@ -4,8 +4,8 @@ import { Box, Button, Radio, RadioGroup, Input } from '@chakra-ui/react'
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
 import { PayshiftChannel } from 'payshift'
 import { useCallback, useState } from 'react'
-import axios from 'axios'
 import qrcode from 'qrcode'
+import Image from 'next/image'
 
 export const getServerSideProps = async function (context) {
   const orderId = String(context.query.orderId)
@@ -44,10 +44,14 @@ const OrderPage = function (
   const pay = useCallback(
     async function () {
       try {
-        const { data } = await axios.post(`/orders/${props.order._id}/pay`, {
-          email,
-          channel,
+        const res = await fetch(`/orders/${props.order._id}/pay`, {
+          method: 'POST',
+          body: JSON.stringify({
+            email,
+            channel,
+          }),
         })
+        const data = await res.json()
         if (data.qrcode) {
           const dataurl = await qrcode.toDataURL(data.qrcode)
           setQrcodeData(dataurl)
@@ -59,7 +63,7 @@ const OrderPage = function (
         console.error(err)
       }
     },
-    [setQrcodeData]
+    [setQrcodeData, channel, email, props]
   )
 
   return (
@@ -89,10 +93,10 @@ const OrderPage = function (
       <Button onClick={pay}>Pay</Button>
 
       {qrcodeData && (
-        <img
+        <Image
           src={qrcodeData}
           alt="qrcode"
-        />
+        ></Image>
       )}
     </Box>
   )

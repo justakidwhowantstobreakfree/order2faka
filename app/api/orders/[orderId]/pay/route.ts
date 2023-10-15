@@ -1,8 +1,9 @@
 import { ObjectId, connectDbIfNeeded } from '@/lib/db'
 import { sendKami } from '@/lib/mailer'
 import { getPayshift } from '@/lib/payshift'
+import { MerchantModel } from '@/models/merchant'
 import { OrderModel } from '@/models/order'
-import axios from 'axios'
+import { createHash } from 'crypto'
 import { NextResponse } from 'next/server'
 import { PayshiftChannel, type CurrencyCode } from 'payshift'
 
@@ -30,9 +31,23 @@ const setupWebhook = async function () {
 
     await sendKami(order.email, order.kami)
 
-    // TODO: attach token
+    const merchant = await MerchantModel.findOne({
+      _id: new ObjectId(order.merchantId),
+    })
+
+    if (!merchant) {
+      throw new Error('no such merchant')
+    }
+
     if (order.notifyUrl) {
-      axios.post(order.notifyUrl)
+      await fetch(order.notifyUrl, {
+        method: 'POST',
+        body: JSON.stringify({
+          merchantKeyHash: createHash('md5')
+            .update(`${order.outTradeNo}${merchant.key}`)
+            .digest('hex'),
+        }),
+      })
     }
   })
 }

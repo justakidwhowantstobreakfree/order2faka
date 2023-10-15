@@ -15,9 +15,10 @@ export interface Order {
   kami: string
   payurl?: string
   qrcode?: string
-  merchatId: string
+  merchantId: string
   channel: PayshiftChannel
   notifyUrl?: string
+  returnUrl?: string
 }
 
 export type NewOrder = Omit<Order, 'createdAt' | 'status' | 'email' | 'channel'>
@@ -84,7 +85,7 @@ const schema = new mongoose.Schema<Order>({
     type: String,
     required: false,
   },
-  merchatId: {
+  merchantId: {
     type: String,
     required: true,
   },
@@ -93,6 +94,10 @@ const schema = new mongoose.Schema<Order>({
     required: false,
   },
   notifyUrl: {
+    type: String,
+    required: false,
+  },
+  returnUrl: {
     type: String,
     required: false,
   },

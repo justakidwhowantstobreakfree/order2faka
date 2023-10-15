@@ -1,15 +1,51 @@
 import type { ChargeCreateParams } from 'payshift'
 import { type NewOrder, OrderModel } from '@/models/order'
 import { generateKami } from '@/lib/kami'
-import { connectDbIfNeeded } from '@/lib/db'
+import { ObjectId, connectDbIfNeeded } from '@/lib/db'
+import { MerchantModel } from '@/models/merchant'
+import { NextResponse } from 'next/server'
+import { createHash } from 'crypto'
 
 interface RequestBody extends ChargeCreateParams {
   notifyUrl?: string
+  merchantId: string
+  merchantKeyHash: string
 }
 
 export const POST = async function (req: Request) {
   const body: RequestBody = await req.json()
   await connectDbIfNeeded()
+
+  const merchant = await MerchantModel.findOne({
+    _id: new ObjectId(body.merchantId),
+  })
+
+  if (!merchant) {
+    return NextResponse.json(
+      {
+        error: 'no such merchant',
+      },
+      {
+        status: 404,
+      }
+    )
+  }
+
+  const keyHash = createHash('md5')
+    .update(`${body.outTradeNo}${merchant.key}`)
+    .digest('hex')
+
+  if (keyHash !== body.merchantKeyHash) {
+    return NextResponse.json(
+      {
+        error: 'merchant key not matched',
+      },
+      {
+        status: 401,
+      }
+    )
+  }
+
   const kami = await generateKami()
 
   const orderData: NewOrder = {
@@ -21,8 +57,9 @@ export const POST = async function (req: Request) {
     currency: body.currency,
     clientIp: body.clientIp,
     userAgent: body.userAgent,
-    merchatId: 'self',
+    merchantId: body.merchantId,
     notifyUrl: body.notifyUrl,
+    returnUrl: body.returnUrl,
   }
 
   const order = new OrderModel(orderData)
