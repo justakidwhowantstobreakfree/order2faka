@@ -14,6 +14,7 @@ export const getPayshift = async function (): Promise<Payshift> {
 }
 
 export const reload = async function () {
+  await connectDbIfNeeded()
   const credentials = await EPayModel.find()
   const providers = credentials.map((credential) => {
     return new EPayProvider(

@@ -1,4 +1,4 @@
-import { ObjectId } from '@/lib/db'
+import { ObjectId, connectDbIfNeeded } from '@/lib/db'
 import { sendKami } from '@/lib/mailer'
 import { getPayshift } from '@/lib/payshift'
 import { OrderModel } from '@/models/order'
@@ -15,6 +15,7 @@ interface Context {
 const setupWebhook = async function () {
   const payshift = await getPayshift()
   payshift.on('charge.succeeded', async (event) => {
+    await connectDbIfNeeded()
     const order = await OrderModel.findOne({
       outTradeNo: event.outTradeNo,
     })
@@ -40,7 +41,7 @@ setupWebhook()
 
 export const POST = async function (req: Request, { params }: Context) {
   const body: { email: string; channel: PayshiftChannel } = await req.json()
-
+  await connectDbIfNeeded()
   const order = await OrderModel.findOne({
     _id: new ObjectId(params.orderId),
   })
@@ -76,7 +77,7 @@ export const POST = async function (req: Request, { params }: Context) {
     outTradeNo: order.outTradeNo,
     clientIp: order.clientIp,
     returnUrl: new URL(
-      `/orders/${order._id.toString()}/`,
+      `/orders/${order._id.toString()}/result`,
       process.env.HOST
     ).toString(),
   })

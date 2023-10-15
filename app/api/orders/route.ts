@@ -1,6 +1,7 @@
 import type { ChargeCreateParams } from 'payshift'
 import { type NewOrder, OrderModel } from '@/models/order'
 import { generateKami } from '@/lib/kami'
+import { connectDbIfNeeded } from '@/lib/db'
 
 interface RequestBody extends ChargeCreateParams {
   notifyUrl?: string
@@ -8,7 +9,7 @@ interface RequestBody extends ChargeCreateParams {
 
 export const POST = async function (req: Request) {
   const body: RequestBody = await req.json()
-
+  await connectDbIfNeeded()
   const kami = await generateKami()
 
   const orderData: NewOrder = {
