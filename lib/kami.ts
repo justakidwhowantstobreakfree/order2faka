@@ -36,7 +36,8 @@ const generate = function () {
   for (let index = 0; index < digits; index++) {
     positions.push(random.int(0, ciphers.length - 1))
   }
-  return ciphers.join('')
+  const codes = positions.map((position) => ciphers[position])
+  return codes.join('')
 }
 
 export const generateKami = async function (): Promise<string> {

@@ -1,3 +1,3 @@
 import mongoose from 'mongoose'
 
-export const ObjectId = mongoose.Schema.ObjectId
+export const ObjectId = mongoose.Types.ObjectId

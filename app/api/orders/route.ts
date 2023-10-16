@@ -45,6 +45,20 @@ export const POST = async function (req: Request) {
     )
   }
 
+  const oldOrder = await OrderModel.findOne({
+    merchantId: body.merchantId,
+    outTradeNo: body.outTradeNo,
+  })
+
+  if (oldOrder) {
+    return Response.json({
+      url: new URL(
+        `/orders/${oldOrder._id.toString()}`,
+        process.env.HOST
+      ).toString(),
+    })
+  }
+
   const kami = await generateKami()
 
   const orderData: NewOrder = {

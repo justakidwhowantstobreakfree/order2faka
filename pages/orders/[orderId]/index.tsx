@@ -18,7 +18,11 @@ export const getServerSideProps = async function (context) {
 
   return {
     props: {
-      order,
+      order: {
+        ...order,
+        _id: order._id.toString(),
+        createdAt: order.createdAt.toString(),
+      },
     },
   }
 } satisfies GetServerSideProps
