@@ -10,7 +10,7 @@ interface Context {
 }
 
 export const POST = async function (req: Request, { params }: Context) {
-  const body: { email: string } = await req.json()
+  const { email } = await req.json()
   const order = await OrderModel.findOne({ _id: new ObjectId(params.orderId) })
   if (!order) {
     return NextResponse.json(
@@ -23,9 +23,23 @@ export const POST = async function (req: Request, { params }: Context) {
     )
   }
 
-  if (order.status === 'paid') {
-    await sendKami(body.email, order.kami)
-    return Response.json({})
+  if (email !== order.email) {
+    return NextResponse.json(
+      {
+        error: 'not this email',
+      },
+      {
+        status: 401,
+      }
+    )
+  }
+
+  if (order.status !== 'paid') {
+    await sendKami(order.email, order.kami)
+    const components = order.email.split('@')
+    return Response.json({
+      email: `${components[0].slice(0, -4)}***@${components[1]}`,
+    })
   } else {
     return NextResponse.json(
       {

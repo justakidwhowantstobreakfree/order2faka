@@ -1,22 +1,25 @@
-import { Box, Input, Button } from '@chakra-ui/react'
+import { Box, Input, Button, Text } from '@chakra-ui/react'
 import { useCallback, useState } from 'react'
 
 const Resend = function () {
   const [orderId, setOrderId] = useState('')
   const [email, setEmail] = useState('')
+  const [sentEmail, setSentEmail] = useState('')
 
   const resend = useCallback(async () => {
     try {
-      await fetch(`/orders/${orderId}/resend`, {
+      const res = await fetch(`/orders/${orderId}/resend`, {
         method: 'POST',
         body: JSON.stringify({
           email,
         }),
       })
+      const { email: sentEmail } = await res.json()
+      setSentEmail(sentEmail)
     } catch (err) {
       console.error(err)
     }
-  }, [orderId, email])
+  }, [orderId, setSentEmail, email])
 
   return (
     <Box>
@@ -29,6 +32,8 @@ const Resend = function () {
         onChange={(e) => setEmail(e.target.value)}
       ></Input>
       <Button onClick={resend}>Resend</Button>
+
+      {sentEmail && <Text>Gift Code has been sent to {sentEmail}</Text>}
     </Box>
   )
 }

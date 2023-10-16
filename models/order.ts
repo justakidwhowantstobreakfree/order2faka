@@ -19,14 +19,19 @@ export interface Order {
   channel: PayshiftChannel
   notifyUrl?: string
   returnUrl?: string
+  emailNotified: boolean
 }
 
-export type NewOrder = Omit<Order, 'createdAt' | 'status' | 'email' | 'channel'>
+export type NewOrder = Omit<
+  Order,
+  'createdAt' | 'status' | 'email' | 'channel' | 'emailNotified'
+>
 
 const schema = new mongoose.Schema<Order>({
   outTradeNo: {
     type: String,
     required: true,
+    index: true,
   },
   amount: {
     type: Number,
@@ -76,6 +81,7 @@ const schema = new mongoose.Schema<Order>({
   kami: {
     type: String,
     required: true,
+    index: true,
   },
   payurl: {
     type: String,
@@ -88,6 +94,7 @@ const schema = new mongoose.Schema<Order>({
   merchantId: {
     type: String,
     required: true,
+    index: true,
   },
   channel: {
     type: String,
@@ -100,6 +107,10 @@ const schema = new mongoose.Schema<Order>({
   returnUrl: {
     type: String,
     required: false,
+  },
+  emailNotified: {
+    type: Boolean,
+    default: false,
   },
 })
 

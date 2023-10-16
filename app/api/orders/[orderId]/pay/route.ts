@@ -31,7 +31,9 @@ const setupWebhookIfNeeded = async function () {
     }
 
     await order.updateOne({
-      status: 'paid',
+      $set: {
+        status: 'paid',
+      },
     })
 
     await sendKami(order.email, order.kami)
@@ -82,8 +84,10 @@ export const POST = async function (req: Request, { params }: Context) {
       _id: new ObjectId(params.orderId),
     },
     {
-      email: body.email,
-      channel: body.channel,
+      $set: {
+        email: body.email,
+        channel: body.channel,
+      },
     }
   )
 
