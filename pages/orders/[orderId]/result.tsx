@@ -1,11 +1,10 @@
-import { ObjectId, connectDbIfNeeded } from '@/lib/db'
+import { ObjectId } from '@/utils/objectId'
 import { OrderModel } from '@/models/order'
 import { Box, Text } from '@chakra-ui/react'
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
 
 export const getServerSideProps = async function (context) {
   const orderId = String(context.query.orderId)
-  await connectDbIfNeeded()
   const order = await OrderModel.findOne(new ObjectId(orderId)).lean()
   if (order === null) {
     return {

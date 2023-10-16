@@ -1,6 +1,5 @@
 import random from 'random'
 import { OrderModel } from '@/models/order'
-import { connectDbIfNeeded } from './db'
 
 // 9 digits
 const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9]
@@ -42,7 +41,6 @@ const generate = function () {
 
 export const generateKami = async function (): Promise<string> {
   const kami = generate()
-  await connectDbIfNeeded()
   const order = await OrderModel.findOne({ kami })
   if (!order) {
     return kami

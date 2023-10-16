@@ -1,7 +1,7 @@
 import type { ChargeCreateParams } from 'payshift'
 import { type NewOrder, OrderModel } from '@/models/order'
 import { generateKami } from '@/lib/kami'
-import { ObjectId, connectDbIfNeeded } from '@/lib/db'
+import { ObjectId } from '@/utils/objectId'
 import { MerchantModel } from '@/models/merchant'
 import { NextResponse } from 'next/server'
 import { createHash } from 'crypto'
@@ -14,7 +14,6 @@ interface RequestBody extends ChargeCreateParams {
 
 export const POST = async function (req: Request) {
   const body: RequestBody = await req.json()
-  await connectDbIfNeeded()
 
   const merchant = await MerchantModel.findOne({
     _id: new ObjectId(body.merchantId),

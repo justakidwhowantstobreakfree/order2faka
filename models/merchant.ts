@@ -1,3 +1,4 @@
+delete require.cache[require.resolve(__filename)]
 import mongoose from 'mongoose'
 
 export interface Merchant {
@@ -11,4 +12,7 @@ const schema = new mongoose.Schema({
   },
 })
 
-export const MerchantModel = mongoose.model('Merchant', schema)
+mongoose.connect('mongodb://127.0.0.1:27017/order2faka')
+
+export const MerchantModel: mongoose.Model<Merchant> =
+  mongoose.models.Merchant || mongoose.model('Merchant', schema)

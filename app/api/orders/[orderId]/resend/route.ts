@@ -1,4 +1,4 @@
-import { ObjectId, connectDbIfNeeded } from '@/lib/db'
+import { ObjectId } from '@/utils/objectId'
 import { sendKami } from '@/lib/mailer'
 import { OrderModel } from '@/models/order'
 import { NextResponse } from 'next/server'
@@ -11,7 +11,6 @@ interface Context {
 
 export const POST = async function (req: Request, { params }: Context) {
   const body: { email: string } = await req.json()
-  await connectDbIfNeeded()
   const order = await OrderModel.findOne({ _id: new ObjectId(params.orderId) })
   if (!order) {
     return NextResponse.json(

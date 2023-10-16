@@ -103,4 +103,7 @@ const schema = new mongoose.Schema<Order>({
   },
 })
 
-export const OrderModel = mongoose.model('Order', schema)
+mongoose.connect('mongodb://127.0.0.1:27017/order2faka')
+
+export const OrderModel: mongoose.Model<Order> =
+  mongoose.models.Order || mongoose.model('Order', schema)

@@ -1,4 +1,4 @@
-import { ObjectId, connectDbIfNeeded } from '@/lib/db'
+import { ObjectId } from '@/utils/objectId'
 import { OrderModel } from '@/models/order'
 import { NextResponse } from 'next/server'
 
@@ -11,8 +11,6 @@ interface Context {
 // TODO: verify token in http headers
 export const GET = async function (req: Request, { params }: Context) {
   const orderId = params.orderId
-
-  await connectDbIfNeeded()
 
   const order = await OrderModel.findOne({
     _id: new ObjectId(orderId),

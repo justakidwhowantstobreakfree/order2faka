@@ -21,4 +21,7 @@ const schema = new mongoose.Schema<EPayCredential>({
   },
 })
 
-export const EPayModel = mongoose.model('Epay', schema)
+mongoose.connect('mongodb://127.0.0.1:27017/order2faka')
+
+export const EPayModel: mongoose.Model<EPayCredential> =
+  mongoose.models.Epay || mongoose.model('Epay', schema)
