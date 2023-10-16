@@ -4,7 +4,7 @@ import { EPayModel } from '@/models/epay'
 let _payshift: Payshift | null
 
 export const getPayshift = async function (): Promise<Payshift> {
-  if (_payshift === null) {
+  if (!_payshift) {
     await reload()
   }
 

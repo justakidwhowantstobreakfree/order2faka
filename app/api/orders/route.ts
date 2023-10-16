@@ -3,7 +3,7 @@ import { type NewOrder, OrderModel } from '@/models/order'
 import { generateKami } from '@/lib/kami'
 import { ObjectId } from '@/utils/objectId'
 import { MerchantModel } from '@/models/merchant'
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { createHash } from 'crypto'
 
 interface RequestBody extends ChargeCreateParams {
@@ -83,5 +83,24 @@ export const POST = async function (req: Request) {
       `/orders/${savedOrder._id.toString()}`,
       process.env.HOST
     ).toString(),
+  })
+}
+
+export const GET = async function (req: NextRequest) {
+  const { searchParams } = req.nextUrl
+  const kami = String(searchParams.get('kami'))
+
+  const order = await OrderModel.findOne({
+    kami,
+  })
+
+  if (!order || order.status !== 'paid') {
+    return Response.json({
+      paid: false,
+    })
+  }
+
+  return Response.json({
+    paid: true,
   })
 }

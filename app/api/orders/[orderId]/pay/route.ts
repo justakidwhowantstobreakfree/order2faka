@@ -13,7 +13,13 @@ interface Context {
   }
 }
 
-const setupWebhook = async function () {
+let listened = false
+
+const setupWebhookIfNeeded = async function () {
+  if (listened) {
+    return
+  }
+
   const payshift = await getPayshift()
   payshift.on('charge.succeeded', async (event) => {
     const order = await OrderModel.findOne({
@@ -49,11 +55,12 @@ const setupWebhook = async function () {
       })
     }
   })
+  listened = true
 }
 
-setupWebhook()
-
 export const POST = async function (req: Request, { params }: Context) {
+  await setupWebhookIfNeeded()
+
   const body: { email: string; channel: PayshiftChannel } = await req.json()
   const order = await OrderModel.findOne({
     _id: new ObjectId(params.orderId),

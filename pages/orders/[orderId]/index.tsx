@@ -1,6 +1,6 @@
 import { ObjectId } from '@/utils/objectId'
 import { OrderModel } from '@/models/order'
-import { Box, Button, Radio, RadioGroup, Input } from '@chakra-ui/react'
+import { Box, Button, Radio, RadioGroup, Input, Text } from '@chakra-ui/react'
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
 import { PayshiftChannel } from 'payshift'
 import { useCallback, useState } from 'react'
@@ -13,6 +13,15 @@ export const getServerSideProps = async function (context) {
   if (order === null) {
     return {
       notFound: true,
+    }
+  }
+
+  if (order.status === 'paid') {
+    return {
+      redirect: {
+        destination: `/orders/${order._id.toString()}/result`,
+        permanent: false,
+      },
     }
   }
 
@@ -47,7 +56,11 @@ const OrderPage = function (
   const pay = useCallback(
     async function () {
       try {
-        const res = await fetch(`/orders/${props.order._id}/pay`, {
+        if (!email) {
+          throw new Error('input email')
+        }
+
+        const res = await fetch(`/api/orders/${props.order._id}/pay`, {
           method: 'POST',
           body: JSON.stringify({
             email,

@@ -17,7 +17,7 @@
     "framer-motion": "^10.16.4",
     "mongoose": "^7.6.2",
     "next": "13.5.4",
-    "payshift": "file:../payshift",
+    "payshift": "^1.0.8",
     "qrcode": "^1.5.3",
     "random": "^4.1.0",
     "react": "^18",

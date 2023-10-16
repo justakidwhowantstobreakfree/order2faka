@@ -12,9 +12,16 @@ interface Context {
 export const GET = async function (req: Request, { params }: Context) {
   const orderId = params.orderId
 
-  const order = await OrderModel.findOne({
-    _id: new ObjectId(orderId),
-  })
+  const order = await OrderModel.findOne(
+    {
+      _id: new ObjectId(orderId),
+    },
+    {
+      amount: 1,
+      status: 1,
+      createdAt: 1,
+    }
+  )
 
   if (!order) {
     return NextResponse.json(
