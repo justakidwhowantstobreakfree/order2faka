@@ -1,36 +1,114 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# order2faka
 
-## Getting Started
+Generate gift card codes on the fly from orders of other shopping systems.
 
-First, run the development server:
+## What Problem Does It Solve?
+
+Receive orders from other shopping sites, generate gift code dynamically, pay with price at shopping system, then go back to the shopping site unlock the shopping item.
+接受其他购物网站的订单，动态生成卡密，按购物网站订单的价格支付，然后回到购物网站输入卡密解锁商品
+
+## How to Use
+
+### Setup Enviroment Variables
+
+Create a `.env.production` on root folder of this repo.
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+HOST=https://yoursite.com
+WEBHOOK_HOST=https://webhook.yoursite.com
+WEBHOOK_PORT=8888  # If you change this port you need modify docker-compose.yml as well
+
+EMAIL_HOST=smtp.yourmailer.com
+EMAIL_PORT=123
+EMAIL_USER=your_mailer_account
+EMAIL_PASS=your_mailer_pass
+
+MONGO_HOST=mongodb
+MONGO_PORT=27017
+
+ADMIN_TOKEN='your_token'
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Build Docker Image
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+You need to install docker on your machine first.
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+```bash
+# If you change order2faka to other names
+# you will need to modify docker-compose.yml as well
+docker build -t order2faka ./
+```
 
-## Learn More
+### Run
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+docker compose up  # or docker-compose up on some versions
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Initialize
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+1. visit `https://yoursite.com` or whatever you input in `.env.production`, maybe localhost:3000
+2. visit `yoursite.com/admin?token=your_token` according to `ADMIN_TOKEN` you input in `.env.production`
+3. Add payment processors and generate at least one merchant. If multiple payment processors are added, round robin algorithm will be applied to distribute your sales volume to these payment processors. At the moment, only epay is supported.
 
-## Deploy on Vercel
+### Create Order
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+#### API Endpoint
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+`POST /api/orders`
+
+#### JSON Body
+
+```typescript
+interface RequestBody {
+  title: string
+  amount: number // in cents
+  outTradeNo: string
+  currency: string // only 'CNY' is available beacause order2faka only supports rainbow epay
+  returnUrl?: string
+  description?: string
+  clientIp: string
+  userAgent?: string
+  notifyUrl?: string
+  merchantId: string // you will get one after generating merchant in admin page
+  merchantKeyHash: string
+}
+```
+
+where `merchantKeyHash` is `md5(outTradeNo + merchantKey)`, you will get one `merchantKey` after generating merchant in admin page
+
+#### Return Example
+
+```typescript
+{
+  url: 'https://yoursite.com/orders/:orderId'
+}
+```
+
+Consumers can buy correspondent gift code at `url` through payment processors
+
+### Verify Order
+
+You can use this api to check the order has been paid or not by querying gift code users input in your site
+
+#### API Endpoint
+
+`GET /api/orders`
+
+#### Query Parameters
+
+```typescript
+type kami = string
+```
+
+#### Return Example
+
+```typescript
+{
+  paid: true
+}
+```
+
+## To Do
+
+Verify http headers with merchantKeyHash on gift code query api
