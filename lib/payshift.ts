@@ -6,6 +6,10 @@ let _payshift: Payshift | null
 export const getPayshift = async function (): Promise<Payshift> {
   if (!_payshift) {
     await reload()
+    _payshift!.startWebServer(
+      process.env.WEBHOOK_HOST as string,
+      Number(process.env.WEBHOOK_PORT)
+    )
   }
 
   return _payshift!

@@ -16,7 +16,7 @@ import {
 import { InferGetStaticPropsType } from 'next'
 import { useCallback, useState } from 'react'
 
-export const getStaticProps = async function () {
+export const getServerSideProps = async function () {
   const [merchants, epays] = await Promise.all([
     MerchantModel.find().lean(),
     EPayModel.find().lean(),
@@ -40,7 +40,9 @@ export const getStaticProps = async function () {
 }
 
 // TODO: verify token
-const Admin = function (props: InferGetStaticPropsType<typeof getStaticProps>) {
+const Admin = function (
+  props: InferGetStaticPropsType<typeof getServerSideProps>
+) {
   const [endpoint, setEndpoint] = useState('')
   const [key, setKey] = useState('')
   const [pid, setPid] = useState<number | null>(null)
