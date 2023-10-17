@@ -1,6 +1,6 @@
 import { ObjectId } from '@/utils/objectId'
 import { OrderModel } from '@/models/order'
-import { Box, Button, Radio, RadioGroup, Input, Text } from '@chakra-ui/react'
+import { Box, Button, Radio, RadioGroup, Input } from '@chakra-ui/react'
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
 import { PayshiftChannel } from 'payshift'
 import { useCallback, useState } from 'react'

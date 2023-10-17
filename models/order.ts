@@ -1,5 +1,6 @@
 import mongoose from 'mongoose'
 import type { PayshiftChannel } from 'payshift'
+import { connectionString } from '@/utils/db'
 
 export interface Order {
   outTradeNo: string
@@ -114,7 +115,7 @@ const schema = new mongoose.Schema<Order>({
   },
 })
 
-mongoose.connect('mongodb://127.0.0.1:27017/order2faka')
+mongoose.connect(connectionString)
 
 export const OrderModel: mongoose.Model<Order> =
   mongoose.models.Order || mongoose.model('Order', schema)

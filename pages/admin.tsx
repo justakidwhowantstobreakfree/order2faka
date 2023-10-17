@@ -13,10 +13,21 @@ import {
   TableContainer,
   Heading,
 } from '@chakra-ui/react'
-import { InferGetStaticPropsType } from 'next'
+import { GetServerSideProps, InferGetStaticPropsType } from 'next'
 import { useCallback, useState } from 'react'
 
-export const getServerSideProps = async function () {
+export const getServerSideProps = async function (context) {
+  const token = context.query.token
+
+  if (token !== process.env.ADMIN_TOKEN) {
+    return {
+      redirect: {
+        destination: '/',
+        permanent: true,
+      },
+    }
+  }
+
   const [merchants, epays] = await Promise.all([
     MerchantModel.find().lean(),
     EPayModel.find().lean(),
@@ -37,7 +48,7 @@ export const getServerSideProps = async function () {
       }),
     },
   }
-}
+} satisfies GetServerSideProps
 
 // TODO: verify token
 const Admin = function (

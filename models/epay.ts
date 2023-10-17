@@ -1,4 +1,5 @@
 import mongoose from 'mongoose'
+import { connectionString } from '@/utils/db'
 
 export interface EPayCredential {
   endpoint: string
@@ -21,7 +22,7 @@ const schema = new mongoose.Schema<EPayCredential>({
   },
 })
 
-mongoose.connect('mongodb://127.0.0.1:27017/order2faka')
+mongoose.connect(connectionString)
 
 export const EPayModel: mongoose.Model<EPayCredential> =
   mongoose.models.Epay || mongoose.model('Epay', schema)

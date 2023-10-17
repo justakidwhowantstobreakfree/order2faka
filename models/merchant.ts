@@ -1,5 +1,5 @@
-delete require.cache[require.resolve(__filename)]
 import mongoose from 'mongoose'
+import { connectionString } from '@/utils/db'
 
 export interface Merchant {
   key: string
@@ -12,7 +12,7 @@ const schema = new mongoose.Schema({
   },
 })
 
-mongoose.connect('mongodb://127.0.0.1:27017/order2faka')
+mongoose.connect(connectionString)
 
 export const MerchantModel: mongoose.Model<Merchant> =
   mongoose.models.Merchant || mongoose.model('Merchant', schema)
