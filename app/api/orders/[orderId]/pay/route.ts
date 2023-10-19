@@ -50,6 +50,12 @@ const setupWebhookIfNeeded = async function () {
       await fetch(order.notifyUrl, {
         method: 'POST',
         body: JSON.stringify({
+          tradeNo: order._id.toString(),
+          title: order.title,
+          description: order.description,
+          amount: order.amount,
+          currency: order.currency,
+          outTradeNo: order.outTradeNo,
           merchantKeyHash: createHash('md5')
             .update(`${order.outTradeNo}${merchant.key}`)
             .digest('hex'),

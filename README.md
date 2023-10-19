@@ -99,6 +99,7 @@ You can use this api to check the order has been paid or not by querying gift co
 
 ```typescript
 type kami = string
+type merchantKeyHash = string
 ```
 
 #### Return Example
@@ -109,6 +110,23 @@ type kami = string
 }
 ```
 
+### Webhook
+
+If you provide `notifyUrl`, when the payment completes, `notifyUrl` will be requested with below JSON parameters:
+
+```typescript
+interface WebhookRequestBody {
+  title: string
+  description: string
+  amount: number
+  currency: string
+  outTradeNo: string
+  merchantKeyHash: string
+}
+```
+
+You should return a `success` raw text if everything works fine on your side.
+
 ## To Do
 
-Verify http headers with merchantKeyHash on gift code query api
+Webhook resend at some interval if merchant fails to respond with raw text `success`
