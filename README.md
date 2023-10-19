@@ -99,14 +99,25 @@ You can use this api to check the order has been paid or not by querying gift co
 
 ```typescript
 type kami = string
-type merchantKeyHash = string
+type merchantKey = string
 ```
+
+Caution: here is `merchantKey` instead of `merchantKeyHash`
 
 #### Return Example
 
 ```typescript
 {
-  paid: true
+  paid: true,
+  outTradeNo: '123',
+}
+```
+
+or
+
+```typescript
+{
+  paid: false
 }
 ```
 

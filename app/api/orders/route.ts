@@ -89,7 +89,7 @@ export const POST = async function (req: Request) {
 export const GET = async function (req: NextRequest) {
   const { searchParams } = req.nextUrl
   const kami = String(searchParams.get('kami'))
-  const merchantKeyHash = String(searchParams.get('merchantKeyHash'))
+  const merchantKey = String(searchParams.get('merchantKey'))
 
   const order = await OrderModel.findOne({
     kami,
@@ -111,11 +111,7 @@ export const GET = async function (req: NextRequest) {
     })
   }
 
-  const keyHash = createHash('md5')
-    .update(`${order.outTradeNo}${merchant.key}`)
-    .digest('hex')
-
-  if (keyHash !== merchantKeyHash) {
+  if (merchant.key !== merchantKey) {
     return Response.json({
       paid: false,
     })
